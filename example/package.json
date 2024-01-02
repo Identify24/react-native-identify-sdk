@@ -22,7 +22,29 @@
     "@react-native/typescript-config": "^0.73.1",
     "babel-plugin-module-resolver": "^5.0.0",
     "pod-install": "^0.1.0",
-    "furkan-test": "../"
+    "react-native-identify-sdk": "git+https://github.com/canibal2/react-native-identify-sdk.git"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-document-scanner-plugin": "*",
+    "react-native-dotenv": "*",
+    "react-native-fast-tflite": "*",
+    "react-native-fs": "*",
+    "react-native-gesture-handler": "*",
+    "react-native-gradle-plugin": "*",
+    "react-native-localize": "*",
+    "react-native-nfc-manager": "*",
+    "react-native-nfc-passport-reader": "*",
+    "react-native-safe-area-context": "*",
+    "react-native-screens": "*",
+    "react-native-signature-canvas": "*",
+    "react-native-svg": "*",
+    "react-native-vision-camera": "*",
+    "react-native-volume-manager": "*",
+    "react-native-webrtc": "*",
+    "react-native-webview": "*",
+    "react-native-worklets-core": "*"
   },
   "engines": {
     "node": ">=18"
