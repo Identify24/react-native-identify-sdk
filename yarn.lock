@@ -5288,10 +5288,6 @@ functions-have-names@^1.2.3:
   resolved "https://registry.npmjs.org/functions-have-names/-/functions-have-names-1.2.3.tgz"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-furkan-test@../:
-  version "0.1.0"
-  resolved "file:"
-
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz"
@@ -8583,6 +8579,10 @@ react-native-gradle-plugin@^0.71.19:
   dependencies:
     react "18.2.0"
     react-native "0.73.1"
+
+"react-native-identify-sdk@git+https://github.com/canibal2/react-native-identify-sdk.git":
+  version "0.1.0"
+  resolved "git+ssh://git@github.com/canibal2/react-native-identify-sdk.git#23d62ab13fc0eb76c2721e0664797192eb879d97"
 
 react-native-localize@^3.0.4:
   version "3.0.4"
