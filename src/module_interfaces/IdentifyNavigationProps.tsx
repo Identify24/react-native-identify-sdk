@@ -1,6 +1,6 @@
 
 
-interface IdentifyScreens {
+export interface IdentifyScreens {
 
     screensOrder?: string[];
     stack?: any;

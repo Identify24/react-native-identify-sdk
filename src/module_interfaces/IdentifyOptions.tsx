@@ -1,6 +1,7 @@
 // IdentifyOptions.tsx
 
 import type { NavigationProp } from "@react-navigation/native";
+import type { IdentifyScreens } from "./IdentifyNavigationProps";
 
 export interface IdentifyOptions {
   identId: string;
