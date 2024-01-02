@@ -78,7 +78,6 @@
     "react-native-builder-bob": "^0.20.0",
     "react-native-document-scanner-plugin": "^0.9.1",
     "react-native-dotenv": "^3.4.9",
-    "react-native-fast-tflite": "0.3.0",
     "react-native-fs": "^2.19.0",
     "react-native-gesture-handler": "^2.14.0",
     "react-native-gradle-plugin": "^0.71.19",
