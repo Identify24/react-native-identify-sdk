@@ -3,6 +3,7 @@ import React from 'react';
 import { createSortedRouteList } from './IdentifyRouteList';
 import { moduleList } from './IdentifyModuleNavigationList';
 import { TransitionPresets } from '@react-navigation/stack';
+import type { IdentifyScreens } from '../module_interfaces/IdentifyNavigationProps';
 
 export const IdentifyNavigator: React.FC<IdentifyScreens> = ({
     screensOrder,

@@ -1,6 +1,7 @@
 // RouteList.tsx
 
 import { IdentifyModuleScreenTypes } from "../enums/identify_module_types";
+import type { IdentifyScreens } from "../module_interfaces/IdentifyNavigationProps";
 
 
 // Define the type for the route and the props passed to createSortedRouteList
@@ -35,7 +36,7 @@ export const createSortedRouteList = ({
 
     // Create a mapping for screen order
     const orderIndex: { [key in any]?: number } = {};
-    (screensOrder ?? []).forEach((type, index) => {
+    (screensOrder ?? []).forEach((type:string, index:number) => {
         orderIndex[type] = index;
     });
 
