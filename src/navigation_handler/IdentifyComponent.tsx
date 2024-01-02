@@ -27,7 +27,7 @@ const handleNewScreenOrder = (screensOrder: string[]) => {
     return uniqueScreensOrder
 }
 
-const IdentifyComponent: React.FC<IdentifyComponentProps> = ({
+export const IdentifyComponent: React.FC<IdentifyComponentProps> = ({
     options,
     stack,
     network
