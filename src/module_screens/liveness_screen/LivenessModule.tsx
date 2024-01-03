@@ -10,10 +10,7 @@ import {
 } from 'react-native-vision-camera';
 
 
-// import {
-//     detectFace,
-   
-// } from 'vision-camera-face-detector-plugin';
+import { detectFace } from 'vision-camera-face-detector-plugin';
 
 const CAMERA_SIZE = 250;
 
@@ -42,10 +39,11 @@ export const LivenessDetection: React.FC = () => {
 
             runAtTargetFps(10, () => {
                 'worklet'
-                // const response = detectFace(frame, detectorStatus, id);
+                //@ts-ignore
+                const response = detectFace(frame, detectorStatus, id);
 
-                console.log(frame);
-
+                console.log(frame.toString());
+                console.log(response)
             })
         },
         [detectorStatus, id]
