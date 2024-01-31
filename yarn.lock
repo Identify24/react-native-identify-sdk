@@ -8573,7 +8573,7 @@ react-native-gradle-plugin@*, react-native-gradle-plugin@^0.71.19:
   resolved "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.19.tgz"
   integrity sha512-1dVk9NwhoyKHCSxcrM6vY6cxmojeATsBobDicX0ZKr7DgUF2cBQRTKsimQFvzH8XhOVXyH8p4HyDSZNIFI8OlQ==
 
-"react-native-identify-sdk-view-example@file:/Users/melih/Downloads/reactNativeProjects/react-native-identify-sdk/example":
+"react-native-identify-sdk-view-example@file:/Users/melih/StudioProjects/reactNativeProjects/react-native-identify-sdk/example":
   version "0.0.1"
   resolved "file:example"
   dependencies:

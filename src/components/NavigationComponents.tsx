@@ -1,7 +1,9 @@
 import { Button, Image, type ImageRequireSource, Text, TouchableOpacity } from "react-native"
-import type { PageInfo } from "../general_handler/IdentfiyNavigationProvider";
+ 
 import React from "react";
 import { COLORS } from "../example_app_stuff/constants/colors";
+import { PageInfo } from "../general_handler/GeneralProviderInterfaces";
+ 
 const BANNER_IMAGE = require('./../assets/ic_logo.png') as ImageRequireSource
 
 export interface BackButtonInterface {

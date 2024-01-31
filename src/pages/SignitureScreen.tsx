@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import React, { useEffect } from "react";
-import { useIdentifySdkContext } from "../general_handler/IdentfiyNavigationProvider";
+import { useIdentifySdkContext } from "../general_handler/IdentfiyGeneralProvider";
 import {  GeneralNavigationOption} from "../components/NavigationComponents";
 import { SignitureModule } from "../module_screens/signiture/SignitureModule";
 import type { NavigateProp } from "../module_interfaces/IdentifyOptions";

@@ -15,6 +15,29 @@ export const IdentifyModuleTypes = {
     VIDEO_RECORD_MODULE: "VideoRecordModuleIdentify",
     NFC_READER_MODULE: "NfcReaderModuleIdentify",
     LIVENESS_DETECTION_MODULE: "LivenessDetectionModuleIdentify",
-    ID_CARD_SCAN_MODULE: "IdCardScanModuleIdentify"
+    ID_CARD_SCAN_MODULE: "IdCardScanModuleIdentify",
+    AGENT_CALL: "AgentCallModuleIdentify",
+    WEBRTC_MODULE: "WebRTCModuleIdentify",
+    THANK_YOU_MODULE: "ThankYouModuleIdentify"
+
+}
+export const IdentifySocketSubscriptionTypes = {
+    SELFIE_MODULE: "Selfie",
+    SPEECH_MODULE: "Speech Recognition",
+    VIDEO_RECORD_MODULE: "Video Recorder",
+    NFC_READER_MODULE: "Mrz & Nfc Screen",
+    LIVENESS_DETECTION_MODULE: "Liveness Detection",
+    ID_CARD_SCAN_MODULE: "Id Card",
+    AGENT_CALL: "Call Wait Screen",
+    SIGNATURE: "Signature",
+    VALIDATE_ADRESS: "Address Confirm"
+}
+
+export const IdentifyAgentCallStatusTypes = {
+    CALL_EMPTY: "emptyCall",
+    CALL_INIT: "initCall",
+    CALL_ACCEPTED: "acceptedCall",
+    CALL_MISSED: "missedCall",
+    CALL_REJECTED: "rejectedCall",
 
 }

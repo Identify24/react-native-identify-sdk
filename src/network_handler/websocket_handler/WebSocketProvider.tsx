@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 
-type WebSocketMessageHandler = (message: any) => void;
+export type WebSocketMessageHandler = (message: any) => void;
 
 interface IdentifyGlobalWebSocketContextProps {
     sendMessage: (message: string) => void;
@@ -12,12 +12,14 @@ const IdentifyGlobalWebSocketContext = createContext<IdentifyGlobalWebSocketCont
 
 
 export const IdentifyGlobalWebSocketProvider: React.FC<{ children: any, socketUrl: string, socketPort: string }> = ({ children, socketUrl }) => {
-    const [socket, setSocket] = useState<WebSocket | null>(null);
+    const socket = useRef<WebSocket | null>(null);
     const [messageHandlers, setMessageHandlers] = useState<WebSocketMessageHandler[]>([]);
-    const ws = new WebSocket(socketUrl);
+    const [lastMessage, setLastMessage] = useState<any>(null)
     const sendMessage = useCallback((message: string) => {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(message);
+     
+
+        if (socket.current && socket.current.readyState === WebSocket.OPEN) {
+            socket.current.send(message);
         }
     }, [socket]);
 
@@ -29,9 +31,17 @@ export const IdentifyGlobalWebSocketProvider: React.FC<{ children: any, socketUr
         setMessageHandlers((prevHandlers) => prevHandlers.filter(h => h !== handler));
     }, []);
 
-    useEffect(() => {
 
-        ws.readyState
+    const ws = new WebSocket(socketUrl);
+
+    useEffect(() => {
+        if (!lastMessage) return;
+        messageHandlers.forEach(handler => handler(lastMessage));
+    }, [lastMessage])
+
+    useEffect(() => {
+        console.log("asdasdasd");
+
         ws.onopen = () => {
             console.log('WebSocket connection opened');
             // Bağlantı başarılı olduğunda yapılacak işlemler
@@ -39,8 +49,7 @@ export const IdentifyGlobalWebSocketProvider: React.FC<{ children: any, socketUr
 
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            messageHandlers.forEach(handler => handler(data));
-            console.log("event", event)
+            setLastMessage(data)
         };
 
         ws.onerror = (error) => {
@@ -51,13 +60,13 @@ export const IdentifyGlobalWebSocketProvider: React.FC<{ children: any, socketUr
             console.log('WebSocket disconnected:', event.reason);
         };
 
-        setSocket(ws);
+        socket.current = ws;
 
 
         return () => {
-            ws.close();
+            socket.current?.close();
         };
-    }, [messageHandlers]);
+    }, []);
 
     return (
         <IdentifyGlobalWebSocketContext.Provider value={{ sendMessage, addMessageHandler, removeMessageHandler }}>

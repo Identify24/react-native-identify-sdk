@@ -3,10 +3,11 @@ import React from 'react';
 
 import IdentifyNavigator from './IdentifyPageNavigator';
 import type { IdentifyComponentProps } from '../module_interfaces/IdentifyOptions';
-import { IdentifySDKProvider } from '../general_handler/IdentfiyNavigationProvider';
+import { IdentifySDKProvider } from '../general_handler/IdentfiyGeneralProvider';
 import { IdentifyNetworkProvider } from '../network_handler/http_handler/IdentifyNetworkProvider';
 import { IdentifyGlobalWebSocketProvider } from '../network_handler/websocket_handler/WebSocketProvider';
 import { IdentifyModuleScreenTypes } from '../enums/identify_module_types';
+import { WebRTCInfo } from '../general_handler/GeneralProviderInterfaces';
 
 
 
@@ -15,6 +16,7 @@ const handleNewScreenOrder = (screensOrder: string[]) => {
 
     const cardPhotoIndex = uniqueScreensOrder.indexOf(IdentifyModuleScreenTypes.IDENTIFICATION_INFORMATION_WITH_CARD_PHOTO);
     const nfcIndex = uniqueScreensOrder.indexOf(IdentifyModuleScreenTypes.IDENTIFICATION_INFORMATION_WITH_NFC);
+    const agentCallIndex = uniqueScreensOrder.indexOf(IdentifyModuleScreenTypes.AGENT_CALL);
 
     if (cardPhotoIndex !== -1) {
         // If IDENTIFICATION_INFORMATION_WITH_CARD_PHOTO is found, move it before IDENTIFICATION_INFORMATION_WITH_NFC
@@ -24,6 +26,10 @@ const handleNewScreenOrder = (screensOrder: string[]) => {
         // If IDENTIFICATION_INFORMATION_WITH_CARD_PHOTO is not found, insert IDENTIFICATION_INFORMATION_WITH_CARD_PHOTO before its index
         uniqueScreensOrder.splice(nfcIndex, 0, IdentifyModuleScreenTypes.IDENTIFICATION_INFORMATION_WITH_CARD_PHOTO);
     }
+    if (agentCallIndex !== -1) {
+        uniqueScreensOrder.splice(agentCallIndex, 1); // Remove AGENT_CALL
+        uniqueScreensOrder.push(IdentifyModuleScreenTypes.AGENT_CALL); // Insert it at the end
+    }
     return uniqueScreensOrder
 }
 
@@ -32,12 +38,20 @@ export const IdentifyComponent: React.FC<IdentifyComponentProps> = ({
     stack,
     network
 }: IdentifyComponentProps) => {
+    const webRTCInfo: WebRTCInfo = {
+        stun: network.stun,
+        stunPort: network.stunPort,
+        turn: network.turn,
+        turnPort: network.turnPort,
+        turnUsername: network.turnUsername,
+        turnPassword: network.turnPassword,
+    };
     return (
-        <IdentifySDKProvider screensOrder={handleNewScreenOrder(options.screensOrder)}>
+        <IdentifyGlobalWebSocketProvider
+            socketUrl={network.socketUrl}
+            socketPort={network.socketPort}>
             <IdentifyNetworkProvider baseUrl={network.baseUrl} identId={options.identId}>
-                <IdentifyGlobalWebSocketProvider
-                    socketUrl={network.socketUrl}
-                    socketPort={network.socketPort}>
+                <IdentifySDKProvider screensOrder={handleNewScreenOrder(options.screensOrder)} webRTCInfo={webRTCInfo}>
                     <IdentifyNavigator
                         stack={stack}
                         screensOrder={handleNewScreenOrder(options.screensOrder)}
@@ -50,9 +64,9 @@ export const IdentifyComponent: React.FC<IdentifyComponentProps> = ({
                         videoRecordScreen={options.screens.videoRecordScreen}
                         signatureScreen={options.screens.signatureScreen}
                         addressConfScreen={options.screens.addressConfScreen} />
-                </IdentifyGlobalWebSocketProvider>
+                </IdentifySDKProvider>
             </IdentifyNetworkProvider>
-        </IdentifySDKProvider>
+        </IdentifyGlobalWebSocketProvider>
     );
 };
 

@@ -33,7 +33,7 @@ export const IdentifyNavigator: React.FC<IdentifyScreens> = ({
         signatureScreen,
         addressConfScreen,
     });
-    console.log("sortedRouteList", sortedRouteList);
+
 
     return (
         <stack.Navigator

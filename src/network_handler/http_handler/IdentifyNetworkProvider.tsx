@@ -6,7 +6,7 @@ import axios, { type AxiosInstance, type AxiosResponse } from 'axios';
 
 interface IdentifyGlobalContextProps {
     apiClient: AxiosInstance;
-    getCustomerInformation: ( modules: GetDetailsDto) => Promise<BaseApiResponse<CustomerInformationEntity>>;
+    getCustomerInformation: (modules: GetDetailsDto) => Promise<BaseApiResponse<CustomerInformationEntity>>;
     setSmsCode: (tanDto: TanDto) => Promise<BaseApiResponse<TanEntity>>;
     setMrzData: (mrzDto: MrzDto) => Promise<BaseApiResponse<CustomerInformationEntity>>
     setScannedMrzData: (scannedMrzDto: ScannedMrzDto) => Promise<BaseApiResponse<CustomerInformationEntity>>
@@ -21,11 +21,12 @@ const IdentifyNetworkContext = createContext<IdentifyGlobalContextProps | undefi
 export const IdentifyNetworkProvider: FunctionComponent<{ children: any, baseUrl: string, identId: string }> = ({ children, baseUrl, identId }) => {
     const apiClient = axios.create({ baseURL: baseUrl });
 
-    const getCustomerInformation = async (modules: GetDetailsDto): Promise<BaseApiResponse<CustomerInformationEntity>> => {
+    const getCustomerInformation = async (moduleList: GetDetailsDto): Promise<BaseApiResponse<CustomerInformationEntity>> => {
         try {
+            console.log("getCustomerInformation_modules_list", moduleList.modules);
+
             const response: AxiosResponse<BaseApiResponse<CustomerInformationEntity>>
-                = await apiClient.post("/mobile/getIdentDetails/" + identId, modules);
-            console.log(response.headers);
+                = await apiClient.post("/mobile/getIdentDetails/" + identId, { "modules": moduleList.modules, });
 
             return response.data;
         } catch (error) {

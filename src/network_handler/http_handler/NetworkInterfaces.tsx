@@ -4,21 +4,39 @@ export interface BaseApiResponse<T> {
     data?: T;
 }
 
+// To parse this data:
+//
+//   import { Convert, CustomerInformationEntity } from "./file";
+//
+//   const customerInformationEntity = Convert.toCustomerInformationEntity(json);
+
 export interface CustomerInformationEntity {
-    createdAt?: string;
-    createdBy?: string;
-    customerId?: string;
-    customerUid?: string;
-    formUid?: string;
-    id?: string;
-    status?: string;
-    webviewUrl?: string;
-    language?: string;
-    signLanguage?: string;
-    projectId?: string;
-    liveness?: number[];
-    modules?: string[];
+    created_at?:          Date;
+    created_by?:          string;
+    customer_id?:         string;
+    customer_uid?:        string;
+    form_uid?:            string;
+    id?:                  string;
+    identification_type?: string;
+    language?:            null;
+    liveness?:            number[];
+    modules?:             string[];
+    project_id?:          string;
+    sign_language?:       string;
+    status?:              string;
 }
+
+// Converts JSON strings to/from your types
+export class Convert {
+    public static toCustomerInformationEntity(json: string): CustomerInformationEntity {
+        return JSON.parse(json);
+    }
+
+    public static customerInformationEntityToJson(value: CustomerInformationEntity): string {
+        return JSON.stringify(value);
+    }
+}
+
 export interface TanEntity {
     id?: string;
 }

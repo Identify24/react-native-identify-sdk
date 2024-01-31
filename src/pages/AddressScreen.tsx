@@ -1,6 +1,6 @@
 import { Text, TextInput, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useIdentifySdkContext } from "../general_handler/IdentfiyNavigationProvider";
+import { useIdentifySdkContext } from "../general_handler/IdentfiyGeneralProvider";
 import { GeneralNavigationOption } from "../components/NavigationComponents";
 import type { NavigateProp } from "../module_interfaces/IdentifyOptions";
 
@@ -10,8 +10,6 @@ export const AddressScreen: React.FC<NavigateProp> = ({ navigation }: NavigatePr
     const [text, setText] = useState('');
     useEffect(() => {
         navigation.setOptions(GeneralNavigationOption({ pageInfo, goToNextPage, goToPreviousPage }))
-        console.log("123123123");
-
     }, [pageInfo, goToNextPage, goToPreviousPage])
 
     return (

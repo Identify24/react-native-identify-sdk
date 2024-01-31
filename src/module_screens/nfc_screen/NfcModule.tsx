@@ -3,6 +3,7 @@ import * as React from 'react';
 // import { useState } from 'react';
 
 import {  Button, StyleSheet, View } from 'react-native';
+import { IDCardModel, StartNFCProps,startNFC } from 'react-native-nfc-passport-reader';
 
  
 
@@ -10,24 +11,23 @@ import {  Button, StyleSheet, View } from 'react-native';
 
 export const NfcReader: React.FC = () => {
 
-    // const [cardInfo, setCardInfo] = useState<IDCardModel>();
-
-    // const nfcProps: StartNFCProps = {
-    //     idCardBirthDay: "971011",
-    //     idCardValidDate: "300622",
-    //     idCardDocNo: "A27T02194",
-    //     callback: (info: IDCardModel) => {
-            
-    //         console.log(info);
-            
-    //         setCardInfo(info) }
-    // };
+    const [cardInfo, setCardInfo] = React.useState<IDCardModel>();
+ const nfcProps: StartNFCProps = {
+        idCardBirthDay: "971011",
+        idCardValidDate: "300622",
+        idCardDocNo: "A27T02194",
+        callback: (info: IDCardModel) => {
+   
+            console.log(info);
+   
+            setCardInfo(info) }
+    };
 
     return (
         <View style={styles.container}>
             <Button onPress={async () => {
 
-                // startNFC(nfcProps)
+                  startNFC(nfcProps)
             }} title="Start sca1nning" />
             {/* <Text>{cardInfo?.name}</Text>
             <Text>{cardInfo?.surname}</Text>

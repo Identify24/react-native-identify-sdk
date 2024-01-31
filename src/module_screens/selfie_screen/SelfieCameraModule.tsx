@@ -21,7 +21,7 @@ export const SelfieCamera: React.FC = () => {
         if (device != null && cameraPermission) {
             const photo = await camera.current!.takePhoto()
             const base64String = await RNFS.readFile(photo.path, 'base64');
-             
+       
             
             setImage(photo);
 

@@ -1,145 +1,190 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Button, KeyboardAvoidingView } from 'react-native';
-
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { SafeAreaView, StyleSheet, View, Button, KeyboardAvoidingView } from 'react-native';
+import { StackActions } from '@react-navigation/native';
 import {
   RTCView,
   mediaDevices,
   MediaStream,
 
   RTCPeerConnection,
+  MediaStreamTrack,
   RTCSessionDescription,
   RTCIceCandidate,
 } from 'react-native-webrtc';
-import { useIdentifyGlobalWebSocket } from '../../network_handler/websocket_handler/WebSocketProvider';
+import { WebSocketMessageHandler, useIdentifyGlobalWebSocket } from '../../network_handler/websocket_handler/WebSocketProvider';
+import { useIdentifySdkContext } from '../../general_handler/IdentfiyGeneralProvider';
+import { NavigateProp } from '../../module_interfaces/IdentifyOptions';
+import { IdentifyModuleTypes } from '../../enums/identify_module_types';
 
-export const VideoRecordModule: React.FC = () => {
 
-  function send(message: { event: string; data: any; }) {
-    conn.send(JSON.stringify(message));
-  }
+export const WebRTCModule: React.FC<NavigateProp> = ({ navigation }: NavigateProp) => {
+  const { webRTCInfo, userDetails } = useIdentifySdkContext();
+  const { sendMessage, addMessageHandler, removeMessageHandler } = useIdentifyGlobalWebSocket();
+
+
+  const peerConnection = useRef<RTCPeerConnection | null>(null);
 
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [localStream, setLocalStream] = useState<MediaStream>();
-  const [webcamStarted, setWebcamStarted] = useState(false);
-  const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-  const peerConnection = new RTCPeerConnection(configuration)
-  const { addMessageHandler, removeMessageHandler } = useIdentifyGlobalWebSocket();
-  peerConnection.addEventListener('track', async (event) => {
-    setRemoteStream(event.streams[0]);
-    console.log(remoteStream)
-  });
 
-  peerConnection.addEventListener('icecandidate', event => {
-    if (event.candidate) {
-
-      send({
-        event: "candidate",
-        data: event.candidate
-      });
-    }
-  });
-
-
-  var conn = new WebSocket('ws://your ip address:8080/socket');//change with your ip
 
   useEffect(() => {
-    // Mesaj işleyicisi ekle
-    const handleWebSocketMessageA = async (event: { data: string; }) => {
-      console.log('ComponentA:', event);
-      console.log("Messaggio ricevuto:", event.data);
-
-      // Analizza il messaggio JSON ricevuto
-      const message = JSON.parse(event.data);
-
-      if (message.event === "answer" && message.data) {
-        const answer = new RTCSessionDescription(message.data);
-        try {
-          await peerConnection.setRemoteDescription(answer);
-          console.log("Descrizione remota impostata con successo.");
-        } catch (error) {
-          console.log(answer)
-          console.error("Errore nell'impostazione della descrizione remota:", error);
-        }
-      }
-
-
-      // Controlla se il messaggio contiene un candidato ICE
-      if (message.event === "candidate" && message.data) {
-        console.log(localStream);
-        // Estrai il candidato ICE dal messaggio
-        const candidate = new RTCIceCandidate(message.data);
-
-        // Aggiungi il candidato ICE al tuo peerConnection
-        peerConnection.addIceCandidate(candidate)
-          .then(() => {
-            console.log('ICE candidate aggiunto con successo');
-          })
-          .catch(error => {
-            console.error('Errore nell aggiungere l ICE candidate:', error);
-          });
-      }
-      if (message.event === "offer" && message.data) {
-
-        const offer = new RTCSessionDescription(message.data);
-        await peerConnection.setRemoteDescription(offer);
-
-        try {
-          const answer = await peerConnection.createAnswer();
-          console.log('Risposta creata con successo');
-          console.log(answer)
-
-          await send({
-            event: "answer",
-            data: answer
-          });
-
-          await peerConnection.setLocalDescription(answer);
-        } catch (error) {
-          console.error('Errore durante l invio della risposta al server di segnalazione');
-        }
-
-      }
+    const configuration = {
+      iceServers: [{
+        urls: [webRTCInfo.stun + ":" + webRTCInfo.stunPort, webRTCInfo.turn + ":" + webRTCInfo.turnPort],
+        username: webRTCInfo.turnUsername,
+        credential: webRTCInfo.turnPassword,
+      }]
     };
 
-    addMessageHandler(handleWebSocketMessageA);
 
-    // Temizleme fonksiyonu
+    peerConnection.current = new RTCPeerConnection(configuration);
 
     return () => {
-      // Mesaj işleyicisini kaldır
-      removeMessageHandler(handleWebSocketMessageA);
-    };
 
+      peerConnection.current?.close();
+
+    }
+  }, []);
+  const trackHandler = async (event: { streams: React.SetStateAction<MediaStream | undefined>[]; }) => {
+    setRemoteStream(event.streams[0]);
+  };
+
+  const iceCandidateHandler = (event: { candidate: any; }) => {
+    if (event.candidate) {
+      sendMessage(JSON.stringify({
+        "action": "candidate",
+        "room": userDetails?.customer_uid,
+        "candidate": event.candidate,
+      }));
+    }
+  };
+  useEffect(() => {
+    try {
+
+
+      peerConnection.current!!.addEventListener('track', trackHandler);
+
+      peerConnection.current!!.addEventListener('icecandidate', iceCandidateHandler);
+
+    } catch (e) {
+      console.error("Listener Error:", e);
+    }
+
+    return () => {
+      peerConnection.current?.removeEventListener("track", trackHandler);
+      peerConnection.current?.removeEventListener("icecandidate", iceCandidateHandler);
+    }
+  }, []);
+
+  const handleSocketEvents = (event: WebSocketMessageHandler) => {
+    try {
+      if (event) {
+        const socketActionData = JSON.parse(JSON.stringify(event));
+        console.log("socketActionData:", socketActionData);
+
+        const fetchData = async () => {
+
+          if (socketActionData["action"] === "sdp" && socketActionData["sdp"]["type"] === "answer" && socketActionData["sdp"]) {
+
+            const answer = new RTCSessionDescription({
+              sdp: socketActionData["sdp"]["sdp"],
+              type: "answer",
+            });
+
+            try {
+
+              await peerConnection.current!!.setRemoteDescription(answer);
+
+
+
+            } catch (error) {
+
+              console.error("Error setting remote description:", error);
+            }
+          }
+
+
+          // Check if the message contains an ICE candidate
+          if (socketActionData["action"] === "candidate" && socketActionData["candidate"]["candidate"]) {
+
+            // Extract the ICE candidate from the message
+            const candidate = new RTCIceCandidate({
+              candidate: socketActionData["candidate"]["candidate"],
+              sdpMid: socketActionData["candidate"]["sdpMid"],
+              sdpMLineIndex: socketActionData["candidate"]["sdpMLineIndex"],
+            });
+
+            // Add the ICE candidate to your peerConnection
+            await peerConnection.current!!.addIceCandidate(candidate)
+              .then(() => {
+                console.log('ICE candidate added successfully');
+              })
+              .catch(error => {
+                console.error('Error adding ICE candidate:', error);
+              });
+          }
+        }
+        fetchData()
+
+        if (socketActionData["action"] === "terminateCall") {
+          const popAction = StackActions.popToTop()
+          navigation.dispatch(popAction);
+          navigation.navigate(IdentifyModuleTypes.THANK_YOU_MODULE)
+        }
+      }
+    } catch (e) {
+      console.error("Error", e);
+    }
+  }
+
+
+  useEffect(() => {
+    addMessageHandler(handleSocketEvents);
+    return () => {
+      removeMessageHandler(handleSocketEvents);
+    };
   }, [addMessageHandler]);
 
- 
-
-  const startWebcam = async () => {
+  useEffect(() => {
+    startWebcam();
+    return () => {
+      localStream?.release()
+      setLocalStream(undefined)
+    };
+  }, []);
+  
+  const startWebcam = useCallback(async () => {
 
     try {
       const stream = await mediaDevices.getUserMedia({
         video: true,
         audio: true,
-      });
 
-      setWebcamStarted(true);
+      });
       setLocalStream(stream);
 
-      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+      stream.getTracks().forEach(track => peerConnection.current!!.addTrack(track, stream));
     } catch (error) {
-      console.error('Errore durante l invio della risposta al server di segnalazione');
+      console.error('Error sending response to reporting server');
     }
 
-    const offer = await peerConnection.createOffer({});
-    //console.log('offer',offer)
-    await peerConnection.setLocalDescription(offer);
+    const offer = await peerConnection.current!!.createOffer({});
 
-    send({
-      event: "offer",
-      data: peerConnection.localDescription
-    });
+    await peerConnection.current!!.setLocalDescription(offer);
 
-  }
+    sendMessage(JSON.stringify({
+      "action": "startCall",
+      "room": userDetails?.customer_uid,
+    }))
+
+    sendMessage(JSON.stringify({
+      "action": "sdp",
+      "room": userDetails?.customer_uid,
+      "sdp": peerConnection.current!!.localDescription
+    }));
+
+  }, [])
 
   return (
     <KeyboardAvoidingView style={styles.body} behavior="position">
@@ -150,14 +195,13 @@ export const VideoRecordModule: React.FC = () => {
           objectFit="cover"
           mirror
         />
-        <View style={styles.buttons}>
-          {!webcamStarted && (
-            <Button title="Start webcam" onPress={startWebcam} />
-          )}
-          {webcamStarted && (
-            <Button title="Stop webcam" onPress={() => setLocalStream(undefined)} />
-          )}
-        </View>
+        <RTCView
+          streamURL={localStream?.toURL()}
+          style={styles.stream}
+          objectFit="cover"
+          mirror
+        />
+
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
