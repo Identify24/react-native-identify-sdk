@@ -79,7 +79,7 @@ function IdentifySdkScreen() {
     IdentifyModuleScreenTypes.VALIDATE_ADDRESS,
   ]
 
-
+//if you want you can change this pages with custom pages.
   const identifyScreens: IdentifyScreens = {
     waitScreen: WaitScreen,
     nfcScreen: NfcScreen,
