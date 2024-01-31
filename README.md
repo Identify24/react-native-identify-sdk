@@ -2,10 +2,10 @@
 
 Add this line to package.json file and run npm install
 
-## Installation
+## Adding to Project
 
 ```js
-    "react-native-identify-sdk": "git+https://github.com/canibal2/react-native-identify-sdk.git",
+"react-native-identify-sdk": "git+https://github.com/canibal2/react-native-identify-sdk.git",
 ```
 
 ## Usage
