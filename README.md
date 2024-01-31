@@ -1,11 +1,11 @@
-# react-native-identify-sdk-view
+# react-native-identify-sdk
 
-package
+Add this line to package.json file and run npm install
 
 ## Installation
 
-```sh
-npm install react-native-identify-sdk-view
+```js
+    "react-native-identify-sdk": "git+https://github.com/canibal2/react-native-identify-sdk.git",
 ```
 
 ## Usage
